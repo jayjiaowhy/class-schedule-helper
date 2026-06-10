@@ -17,10 +17,118 @@ const PERIODS = [
   "22:00-22:45",
 ];
 const BLOCK_COLORS = ["#0f766e", "#315f8c", "#836a1f", "#7a4f96", "#b15d3a", "#3d7864", "#5d6f32"];
+const STYLE_STORAGE_KEY = "classScheduleHelper.courseStyles.v2";
+const LEGACY_COLOR_STORAGE_KEY = "classScheduleHelper.courseColors.v1";
+const COURSE_TYPES = [
+  { id: "auto", label: "自动", color: "" },
+  { id: "required", label: "必修", color: "#008060" },
+  { id: "elective", label: "选修", color: "#0057d9" },
+  { id: "audit", label: "旁听", color: "#8b3ff2" },
+  { id: "backup", label: "备选", color: "#ffcc00", textColor: "#17231f" },
+];
+const EXCLUSION_PATTERNS = [
+  { id: "none", label: "无互斥", shortLabel: "无", pattern: "none", size: "auto" },
+  {
+    id: "pair-a",
+    label: "互斥A 斜线",
+    shortLabel: "互斥A",
+    pattern: "repeating-linear-gradient(135deg, var(--block-pattern-ink) 0 4px, transparent 4px 10px)",
+    size: "auto",
+  },
+  {
+    id: "pair-b",
+    label: "互斥B 横线",
+    shortLabel: "互斥B",
+    pattern: "repeating-linear-gradient(0deg, var(--block-pattern-ink) 0 3px, transparent 3px 9px)",
+    size: "auto",
+  },
+  {
+    id: "pair-c",
+    label: "互斥C 网格",
+    shortLabel: "互斥C",
+    pattern: "linear-gradient(90deg, var(--block-pattern-ink) 1px, transparent 1px), linear-gradient(0deg, var(--block-pattern-ink) 1px, transparent 1px)",
+    size: "10px 10px",
+  },
+  {
+    id: "pair-d",
+    label: "互斥D 点纹",
+    shortLabel: "互斥D",
+    pattern: "radial-gradient(circle at 2px 2px, var(--block-pattern-ink) 0 1.6px, transparent 1.9px)",
+    size: "8px 8px",
+  },
+  {
+    id: "pair-e",
+    label: "互斥E 棋盘",
+    shortLabel: "互斥E",
+    pattern: "conic-gradient(from 90deg, var(--block-pattern-ink) 0 25%, transparent 0 50%, var(--block-pattern-ink) 0 75%, transparent 0)",
+    size: "12px 12px",
+  },
+];
+const LEGACY_COLOR_MAP = {
+  "#0f766e": { type: "required" },
+  "#047857": { type: "required" },
+  "#008060": { type: "required" },
+  "#315f8c": { type: "elective" },
+  "#2563eb": { type: "elective" },
+  "#0057d9": { type: "elective" },
+  "#836a1f": { type: "audit" },
+  "#a16207": { type: "audit" },
+  "#6b7280": { type: "audit" },
+  "#8b3ff2": { type: "audit" },
+  "#7a4f96": { type: "backup" },
+  "#7c3aed": { type: "backup" },
+  "#ffd23f": { type: "backup" },
+  "#ffcc00": { type: "backup" },
+  "#c43d32": { pattern: "pair-a" },
+  "#dc2626": { pattern: "pair-a" },
+  "#d00000": { pattern: "pair-a" },
+  "#b15d3a": { pattern: "pair-b" },
+  "#be185d": { pattern: "pair-b" },
+  "#c6007e": { pattern: "pair-b" },
+  "#ea580c": { pattern: "pair-c" },
+  "#ff6b00": { pattern: "pair-c" },
+  "#0891b2": { pattern: "pair-d" },
+  "#00a6d6": { pattern: "pair-d" },
+  "#334155": { pattern: "pair-e" },
+  "#111827": { pattern: "pair-e" },
+};
+const LEGACY_PATTERN_ALIASES = {
+  "exclusive-a": "pair-a",
+  "exclusive-b": "pair-b",
+  "exclusive-c": "pair-c",
+  "exclusive-d": "pair-d",
+  "exclusive-e": "pair-e",
+  "mutex-a": "pair-a",
+  "mutex-b": "pair-b",
+  "mutex-c": "pair-c",
+  "mutex-d": "pair-d",
+  "mutex-e": "pair-e",
+};
+
+function normalizeCourseStyle(style = {}) {
+  const type = COURSE_TYPES.some((item) => item.id === style.type) ? style.type : "auto";
+  const patternId = LEGACY_PATTERN_ALIASES[style.pattern] || style.pattern;
+  const pattern = EXCLUSION_PATTERNS.some((item) => item.id === patternId) ? patternId : "none";
+  return { type, pattern };
+}
+
+function loadCourseStyles() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STYLE_STORAGE_KEY) || "{}");
+    if (saved && Object.keys(saved).length) {
+      return Object.fromEntries(Object.entries(saved).map(([courseId, style]) => [courseId, normalizeCourseStyle(style)]));
+    }
+    const legacyColors = JSON.parse(localStorage.getItem(LEGACY_COLOR_STORAGE_KEY) || "{}");
+    return Object.fromEntries(Object.entries(legacyColors).map(([courseId, color]) => [courseId, normalizeCourseStyle(LEGACY_COLOR_MAP[color])]));
+  } catch {
+    return {};
+  }
+}
 
 const state = {
   selected: new Set(),
   activeId: "",
+  courseStyles: loadCourseStyles(),
   filters: {
     search: "",
     category: "",
@@ -88,6 +196,73 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function saveCourseStyles() {
+  localStorage.setItem(STYLE_STORAGE_KEY, JSON.stringify(state.courseStyles));
+}
+
+function getStoredCourseStyle(courseId) {
+  return normalizeCourseStyle(state.courseStyles[courseId]);
+}
+
+function getCourseStyle(course) {
+  return getStoredCourseStyle(course.id);
+}
+
+function getCourseTypeMarker(course) {
+  const style = getCourseStyle(course);
+  return COURSE_TYPES.find((marker) => marker.id === style.type) || COURSE_TYPES[0];
+}
+
+function getCoursePatternMarker(course) {
+  const style = getCourseStyle(course);
+  return EXCLUSION_PATTERNS.find((marker) => marker.id === style.pattern) || EXCLUSION_PATTERNS[0];
+}
+
+function getCourseColor(course, index = 0) {
+  const marker = getCourseTypeMarker(course);
+  return marker.color || BLOCK_COLORS[index % BLOCK_COLORS.length];
+}
+
+function getCourseTextColor(course) {
+  return getCourseTypeMarker(course).textColor || "#ffffff";
+}
+
+function getTypeLabel(course) {
+  return getCourseTypeMarker(course).label;
+}
+
+function getPatternLabel(course) {
+  return getCoursePatternMarker(course).shortLabel;
+}
+
+function getPatternInk(course) {
+  return getCourseTextColor(course) === "#17231f" ? "rgba(23, 35, 31, 0.28)" : "rgba(255, 255, 255, 0.36)";
+}
+
+function getStyleSummary(course) {
+  const pattern = getCoursePatternMarker(course);
+  return pattern.id === "none" ? getTypeLabel(course) : `${getTypeLabel(course)} · ${pattern.shortLabel}`;
+}
+
+function persistCourseStyle(courseId, nextStyle) {
+  const style = normalizeCourseStyle(nextStyle);
+  if (style.type === "auto" && style.pattern === "none") {
+    delete state.courseStyles[courseId];
+  } else {
+    state.courseStyles[courseId] = style;
+  }
+  saveCourseStyles();
+  render();
+}
+
+function setCourseType(courseId, type) {
+  persistCourseStyle(courseId, { ...getStoredCourseStyle(courseId), type });
+}
+
+function setCoursePattern(courseId, pattern) {
+  persistCourseStyle(courseId, { ...getStoredCourseStyle(courseId), pattern });
 }
 
 function populateSelect(select, values, allLabel = "全部") {
@@ -235,7 +410,12 @@ function renderSchedule(courses, conflictSectionKeys) {
         block.className = `course-block stack-${Math.min(stackIndex, 2)}${conflictSectionKeys.has(conflictKey) ? " conflict" : ""}`;
         block.style.gridColumn = `${section.dayOrder + 1}`;
         block.style.gridRow = `${section.startPeriod + 1} / span ${section.endPeriod - section.startPeriod + 1}`;
-        block.style.setProperty("--block-color", BLOCK_COLORS[courseIndex % BLOCK_COLORS.length]);
+        const pattern = getCoursePatternMarker(course);
+        block.style.setProperty("--block-color", getCourseColor(course, courseIndex));
+        block.style.setProperty("--block-text-color", getCourseTextColor(course));
+        block.style.setProperty("--block-pattern", pattern.pattern);
+        block.style.setProperty("--block-pattern-size", pattern.size);
+        block.style.setProperty("--block-pattern-ink", getPatternInk(course));
         block.innerHTML = `
           <button type="button" data-detail-id="${course.id}">
             <span class="block-title">${course.name}</span>
@@ -302,15 +482,67 @@ function renderSelectedList(courses) {
     return;
   }
 
-  courses.forEach((course) => {
+  courses.forEach((course, courseIndex) => {
+    const color = getCourseColor(course, courseIndex);
+    const style = getCourseStyle(course);
+    const pattern = getCoursePatternMarker(course);
+    const patternInk = getPatternInk(course);
     const item = document.createElement("div");
     item.className = "selected-item";
+    item.style.setProperty("--selected-color", color);
+    item.style.setProperty("--selected-pattern", pattern.pattern);
+    item.style.setProperty("--selected-pattern-size", pattern.size);
+    item.style.setProperty("--block-pattern-ink", patternInk);
     item.innerHTML = `
       <div>
-        <strong>${course.name}</strong>
-        <span>${courseTeacher(course)} · ${formatCredits(course.credits)} 学分</span>
+        <div class="selected-title-row">
+          <span class="selected-color-dot" aria-hidden="true"></span>
+          <strong>${course.name}</strong>
+        </div>
+        <span>${courseTeacher(course)} · ${formatCredits(course.credits)} 学分 · ${getStyleSummary(course)}</span>
       </div>
       <button class="remove-button" type="button" data-toggle-id="${course.id}" aria-label="移除 ${course.name}">×</button>
+      <div class="style-picker" role="group" aria-label="${course.name} 课程类型">
+        <span class="picker-label">类型</span>
+        ${COURSE_TYPES.map((marker) => {
+          const isActive = style.type === marker.id;
+          const swatchColor = marker.color || color;
+          return `
+            <button
+              class="style-chip type-chip ${isActive ? "active" : ""} ${marker.id === "auto" ? "auto" : ""}"
+              type="button"
+              title="${marker.label}"
+              aria-label="${course.name} 类型标记为${marker.label}"
+              data-type-course-id="${course.id}"
+              data-type-value="${marker.id}"
+              style="--swatch-color:${swatchColor};"
+            >
+              <span aria-hidden="true"></span>
+              ${marker.label}
+            </button>
+          `;
+        }).join("")}
+      </div>
+      <div class="style-picker pattern-picker" role="group" aria-label="${course.name} 互斥纹理">
+        <span class="picker-label">互斥</span>
+        ${EXCLUSION_PATTERNS.map((marker) => {
+          const isActive = style.pattern === marker.id;
+          return `
+            <button
+              class="style-chip pattern-chip ${isActive ? "active" : ""} ${marker.id === "none" ? "none" : ""}"
+              type="button"
+              title="${marker.label}"
+              aria-label="${course.name} 设置为${marker.label}"
+              data-pattern-course-id="${course.id}"
+              data-pattern-value="${marker.id}"
+              style="--swatch-color:${color};--swatch-pattern:${marker.pattern};--swatch-pattern-size:${marker.size};--block-pattern-ink:${patternInk};"
+            >
+              <span aria-hidden="true"></span>
+              ${marker.shortLabel}
+            </button>
+          `;
+        }).join("")}
+      </div>
     `;
     item.addEventListener("click", (event) => {
       if (event.target.closest("button")) return;
@@ -377,7 +609,11 @@ function buildExportGrid(courses, conflictSectionKeys) {
           cells[period][section.dayOrder].push({
             course,
             section,
-            color: BLOCK_COLORS[courseIndex % BLOCK_COLORS.length],
+            color: getCourseColor(course, courseIndex),
+            textColor: getCourseTextColor(course),
+            pattern: getCoursePatternMarker(course).pattern,
+            patternSize: getCoursePatternMarker(course).size,
+            patternInk: getPatternInk(course),
             conflict: conflictSectionKeys.has(`${course.id}:${section.id}`),
           });
         }
@@ -402,8 +638,8 @@ function exportScheduleHtml(courses, conflicts, conflictSectionKeys) {
         <td>
           ${blocks
             .map(
-              ({ course, section, color, conflict }) => `
-            <div class="course-block ${conflict ? "conflict" : ""}" style="--block-color:${color};">
+              ({ course, section, color, textColor, pattern, patternSize, patternInk, conflict }) => `
+            <div class="course-block ${conflict ? "conflict" : ""}" style="--block-color:${color};--block-text-color:${textColor};--block-pattern:${pattern};--block-pattern-size:${patternSize};--block-pattern-ink:${patternInk};">
               <strong>${escapeHtml(course.name)}</strong>
               <span>${escapeHtml(courseTeacher(course))} · ${escapeHtml(section.weekday)} ${escapeHtml(section.startPeriod)}-${escapeHtml(section.endPeriod)} · ${escapeHtml(section.weekStart)}-${escapeHtml(section.weekEnd)}周</span>
               <span>${escapeHtml(section.location || "地点待确认")}</span>
@@ -430,6 +666,8 @@ function exportScheduleHtml(courses, conflicts, conflictSectionKeys) {
         <tr>
           <td>${escapeHtml(course.courseNo || "-")}</td>
           <td>${escapeHtml(course.name)}</td>
+          <td>${escapeHtml(getTypeLabel(course))}</td>
+          <td>${escapeHtml(getPatternLabel(course))}</td>
           <td>${escapeHtml(courseTeacher(course))}</td>
           <td>${escapeHtml(courseTimeText(course))}</td>
           <td>${escapeHtml(courseClassText(course))}</td>
@@ -472,8 +710,8 @@ function exportScheduleHtml(courses, conflicts, conflictSectionKeys) {
     tbody th { width: 82px; background: #fbfcfc; text-align: left; }
     tbody th strong, tbody th span { display: block; }
     tbody th span { margin-top: 4px; color: var(--muted); font-size: 11px; font-weight: 400; }
-    .course-block { min-height: 62px; padding: 8px; border-radius: 8px; color: #fff; background: var(--block-color); box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); }
-    .course-block.conflict { background: var(--danger); }
+    .course-block { min-height: 62px; padding: 8px; border-radius: 8px; color: var(--block-text-color, #fff); background-color: var(--block-color); background-image: var(--block-pattern, none); background-size: var(--block-pattern-size, auto); background-repeat: repeat; box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); }
+    .course-block.conflict { outline: 3px solid var(--danger); box-shadow: 0 0 0 1px #fff inset; }
     .course-block strong, .course-block span, .course-block small { display: block; line-height: 1.35; }
     .course-block strong { font-size: 13px; }
     .course-block span, .course-block small { font-size: 11px; opacity: .94; }
@@ -484,7 +722,7 @@ function exportScheduleHtml(courses, conflicts, conflictSectionKeys) {
     @media print {
       body { margin: 10mm; background: #fff; }
       section { break-inside: avoid; box-shadow: none; }
-      .course-block { color: #111; background: #eef7f4 !important; border: 1px solid #9bbdb3; }
+      .course-block { color: #111; background-color: #eef7f4 !important; background-image: var(--block-pattern, none) !important; border: 1px solid #9bbdb3; }
       .course-block.conflict { border-color: var(--danger); }
     }
   </style>
@@ -517,7 +755,7 @@ function exportScheduleHtml(courses, conflicts, conflictSectionKeys) {
   <section>
     <h2>已选课程明细</h2>
     <table class="plain-table">
-      <thead><tr><th>课程序号</th><th>课程</th><th>教师</th><th>时间地点</th><th>教学班</th><th>学分</th></tr></thead>
+      <thead><tr><th>课程序号</th><th>课程</th><th>类型</th><th>互斥纹理</th><th>教师</th><th>时间地点</th><th>教学班</th><th>学分</th></tr></thead>
       <tbody>${selectedRows}</tbody>
     </table>
   </section>
@@ -618,6 +856,16 @@ function bindEvents() {
   });
   el.exportSchedule.addEventListener("click", exportSchedule);
   document.addEventListener("click", (event) => {
+    const typeChip = event.target.closest("[data-type-course-id]");
+    if (typeChip) {
+      setCourseType(typeChip.dataset.typeCourseId, typeChip.dataset.typeValue);
+      return;
+    }
+    const patternChip = event.target.closest("[data-pattern-course-id]");
+    if (patternChip) {
+      setCoursePattern(patternChip.dataset.patternCourseId, patternChip.dataset.patternValue);
+      return;
+    }
     const toggle = event.target.closest("[data-toggle-id]");
     if (toggle) {
       toggleCourse(toggle.dataset.toggleId);
