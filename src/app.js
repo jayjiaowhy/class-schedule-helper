@@ -16,52 +16,52 @@ const PERIODS = [
   "21:10-21:55",
   "22:00-22:45",
 ];
-const BLOCK_COLORS = ["#0f766e", "#315f8c", "#836a1f", "#7a4f96", "#b15d3a", "#3d7864", "#5d6f32"];
+const BLOCK_COLORS = ["#0f766e", "#2563eb", "#b45309", "#7c3aed", "#0e7490", "#475569", "#be123c"];
 const STYLE_STORAGE_KEY = "classScheduleHelper.courseStyles.v2";
 const LEGACY_COLOR_STORAGE_KEY = "classScheduleHelper.courseColors.v1";
 const COURSE_TYPES = [
   { id: "auto", label: "自动", color: "" },
-  { id: "required", label: "必修", color: "#008060" },
-  { id: "elective", label: "选修", color: "#0057d9" },
-  { id: "audit", label: "旁听", color: "#8b3ff2" },
-  { id: "backup", label: "备选", color: "#ffcc00", textColor: "#17231f" },
+  { id: "required", label: "必修", color: "#047857" },
+  { id: "elective", label: "选修", color: "#2563eb" },
+  { id: "audit", label: "旁听", color: "#c026d3" },
+  { id: "backup", label: "备选", color: "#facc15", textColor: "#17231f" },
 ];
 const EXCLUSION_PATTERNS = [
   { id: "none", label: "无互斥", shortLabel: "无", pattern: "none", size: "auto" },
   {
     id: "pair-a",
-    label: "互斥A 斜线",
+    label: "互斥A 细斜线",
     shortLabel: "互斥A",
-    pattern: "repeating-linear-gradient(135deg, var(--block-pattern-ink) 0 4px, transparent 4px 10px)",
+    pattern: "repeating-linear-gradient(135deg, var(--block-pattern-ink) 0 2px, transparent 2px 12px)",
     size: "auto",
   },
   {
     id: "pair-b",
-    label: "互斥B 横线",
+    label: "互斥B 细横线",
     shortLabel: "互斥B",
-    pattern: "repeating-linear-gradient(0deg, var(--block-pattern-ink) 0 3px, transparent 3px 9px)",
+    pattern: "repeating-linear-gradient(0deg, var(--block-pattern-ink) 0 2px, transparent 2px 12px)",
     size: "auto",
   },
   {
     id: "pair-c",
-    label: "互斥C 网格",
+    label: "互斥C 细网格",
     shortLabel: "互斥C",
     pattern: "linear-gradient(90deg, var(--block-pattern-ink) 1px, transparent 1px), linear-gradient(0deg, var(--block-pattern-ink) 1px, transparent 1px)",
-    size: "10px 10px",
+    size: "14px 14px",
   },
   {
     id: "pair-d",
     label: "互斥D 点纹",
     shortLabel: "互斥D",
-    pattern: "radial-gradient(circle at 2px 2px, var(--block-pattern-ink) 0 1.6px, transparent 1.9px)",
-    size: "8px 8px",
+    pattern: "radial-gradient(circle at 2px 2px, var(--block-pattern-ink) 0 1.5px, transparent 1.8px)",
+    size: "12px 12px",
   },
   {
     id: "pair-e",
-    label: "互斥E 棋盘",
+    label: "互斥E 交叉线",
     shortLabel: "互斥E",
-    pattern: "conic-gradient(from 90deg, var(--block-pattern-ink) 0 25%, transparent 0 50%, var(--block-pattern-ink) 0 75%, transparent 0)",
-    size: "12px 12px",
+    pattern: "repeating-linear-gradient(45deg, var(--block-pattern-ink) 0 1px, transparent 1px 10px), repeating-linear-gradient(135deg, var(--block-pattern-ink) 0 1px, transparent 1px 10px)",
+    size: "auto",
   },
 ];
 const LEGACY_COLOR_MAP = {
@@ -75,10 +75,12 @@ const LEGACY_COLOR_MAP = {
   "#a16207": { type: "audit" },
   "#6b7280": { type: "audit" },
   "#8b3ff2": { type: "audit" },
+  "#c026d3": { type: "audit" },
   "#7a4f96": { type: "backup" },
   "#7c3aed": { type: "backup" },
   "#ffd23f": { type: "backup" },
   "#ffcc00": { type: "backup" },
+  "#facc15": { type: "backup" },
   "#c43d32": { pattern: "pair-a" },
   "#dc2626": { pattern: "pair-a" },
   "#d00000": { pattern: "pair-a" },
@@ -172,6 +174,30 @@ function formatCredits(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
+function creditRange(courses) {
+  return courses.reduce(
+    (range, course) => {
+      const credits = Number(course.credits || 0);
+      const type = getCourseStyle(course).type;
+      if (type === "required") {
+        range.min += credits;
+        range.max += credits;
+      } else if (type === "elective") {
+        range.max += credits;
+      }
+      return range;
+    },
+    { min: 0, max: 0 },
+  );
+}
+
+function formatCreditRange(courses) {
+  const range = creditRange(courses);
+  const min = formatCredits(range.min);
+  const max = formatCredits(range.max);
+  return min === max ? min : `${min}-${max}`;
+}
+
 function sectionText(section) {
   if (!section || !section.parsed) return section?.raw || "时间待确认";
   return `${section.weekday} ${section.startPeriod}-${section.endPeriod} [${section.weekStart}-${section.weekEnd}] ${section.location}`;
@@ -238,7 +264,7 @@ function getPatternLabel(course) {
 }
 
 function getPatternInk(course) {
-  return getCourseTextColor(course) === "#17231f" ? "rgba(23, 35, 31, 0.28)" : "rgba(255, 255, 255, 0.36)";
+  return getCourseTextColor(course) === "#17231f" ? "rgba(23, 35, 31, 0.22)" : "rgba(255, 255, 255, 0.30)";
 }
 
 function getStyleSummary(course) {
@@ -580,15 +606,15 @@ function renderDetail(course) {
 }
 
 function renderSummary(courses, conflicts) {
-  const totalCredits = courses.reduce((sum, course) => sum + Number(course.credits || 0), 0);
+  const creditsText = formatCreditRange(courses);
   const files = data.meta?.sourceFiles || [];
   const source = files.length > 1 ? `${files.length} 个导出文件` : files[0] || "本地数据";
   const deduped = data.meta?.dedupedCount ? ` · 已去重 ${data.meta.dedupedCount} 条` : "";
   el.dataStatus.textContent = `${source} · ${data.meta?.courseCount || data.courses.length} 个教学班 · ${data.meta?.sectionCount || 0} 段时间${deduped}`;
   el.selectedCount.textContent = String(courses.length);
   el.summaryCourses.textContent = String(courses.length);
-  el.summaryCredits.textContent = formatCredits(totalCredits);
-  el.creditTotal.textContent = formatCredits(totalCredits);
+  el.summaryCredits.textContent = creditsText;
+  el.creditTotal.textContent = creditsText;
   el.summaryConflicts.textContent = String(conflicts.length);
   el.scheduleSummary.textContent = courses.length ? `${courses.length} 个教学班已放入课表` : "未选择课程";
 
@@ -624,7 +650,7 @@ function buildExportGrid(courses, conflictSectionKeys) {
 }
 
 function exportScheduleHtml(courses, conflicts, conflictSectionKeys) {
-  const totalCredits = courses.reduce((sum, course) => sum + Number(course.credits || 0), 0);
+  const creditsText = formatCreditRange(courses);
   const cells = buildExportGrid(courses, conflictSectionKeys);
   const now = new Date();
   const dateText = now.toLocaleString("zh-CN", { hour12: false });
@@ -710,10 +736,10 @@ function exportScheduleHtml(courses, conflicts, conflictSectionKeys) {
     tbody th { width: 82px; background: #fbfcfc; text-align: left; }
     tbody th strong, tbody th span { display: block; }
     tbody th span { margin-top: 4px; color: var(--muted); font-size: 11px; font-weight: 400; }
-    .course-block { min-height: 62px; padding: 8px; border-radius: 8px; color: var(--block-text-color, #fff); background-color: var(--block-color); background-image: var(--block-pattern, none); background-size: var(--block-pattern-size, auto); background-repeat: repeat; box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); }
+    .course-block { min-height: 62px; padding: 8px; border-radius: 8px; color: var(--block-text-color, #fff); background-color: var(--block-color); background-image: var(--block-pattern, none); background-size: var(--block-pattern-size, auto); background-repeat: repeat; box-shadow: inset 0 1px 0 rgba(255,255,255,.24), inset 0 0 0 1px rgba(255,255,255,.24); }
     .course-block.conflict { outline: 3px solid var(--danger); box-shadow: 0 0 0 1px #fff inset; }
     .course-block strong, .course-block span, .course-block small { display: block; line-height: 1.35; }
-    .course-block strong { font-size: 13px; }
+    .course-block strong { font-size: 13px; text-shadow: 0 1px 1px rgba(23,35,31,.18); }
     .course-block span, .course-block small { font-size: 11px; opacity: .94; }
     .plain-table { table-layout: auto; }
     .plain-table th { background: #eef7f4; text-align: left; }
@@ -735,7 +761,7 @@ function exportScheduleHtml(courses, conflicts, conflictSectionKeys) {
     </div>
     <div class="stats">
       <div class="stat"><strong>${escapeHtml(courses.length)}</strong><span>课程</span></div>
-      <div class="stat"><strong>${escapeHtml(formatCredits(totalCredits))}</strong><span>学分</span></div>
+      <div class="stat"><strong>${escapeHtml(creditsText)}</strong><span>学分范围</span></div>
       <div class="stat"><strong>${escapeHtml(conflicts.length)}</strong><span>冲突</span></div>
     </div>
   </header>
