@@ -42,6 +42,7 @@ const el = {
   classFilter: document.querySelector("#classFilter"),
   seatFilter: document.querySelector("#seatFilter"),
   resetFilters: document.querySelector("#resetFilters"),
+  exportSchedule: document.querySelector("#exportSchedule"),
   clearSelection: document.querySelector("#clearSelection"),
   visibleCount: document.querySelector("#visibleCount"),
   selectedCount: document.querySelector("#selectedCount"),
@@ -78,6 +79,15 @@ function courseTeacher(course) {
 
 function courseClassText(course) {
   return course.teachingClass || "未注明教学班";
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 function populateSelect(select, values, allLabel = "全部") {
@@ -352,6 +362,184 @@ function renderSummary(courses, conflicts) {
 
   el.conflictBadge.textContent = conflicts.length ? `${conflicts.length} 个冲突` : "无冲突";
   el.conflictBadge.className = `status-badge ${conflicts.length ? "warn" : "ok"}`;
+  el.exportSchedule.disabled = courses.length === 0;
+}
+
+function buildExportGrid(courses, conflictSectionKeys) {
+  const cells = Array.from({ length: PERIODS.length + 1 }, () => Array.from({ length: DAY_LABELS.length + 1 }, () => []));
+
+  courses.forEach((course, courseIndex) => {
+    course.sections
+      .filter((section) => section.parsed)
+      .forEach((section) => {
+        for (let period = section.startPeriod; period <= section.endPeriod; period += 1) {
+          if (!cells[period]?.[section.dayOrder]) continue;
+          cells[period][section.dayOrder].push({
+            course,
+            section,
+            color: BLOCK_COLORS[courseIndex % BLOCK_COLORS.length],
+            conflict: conflictSectionKeys.has(`${course.id}:${section.id}`),
+          });
+        }
+      });
+  });
+
+  return cells;
+}
+
+function exportScheduleHtml(courses, conflicts, conflictSectionKeys) {
+  const totalCredits = courses.reduce((sum, course) => sum + Number(course.credits || 0), 0);
+  const cells = buildExportGrid(courses, conflictSectionKeys);
+  const now = new Date();
+  const dateText = now.toLocaleString("zh-CN", { hour12: false });
+
+  const rows = PERIODS.map((time, periodIndex) => {
+    const period = periodIndex + 1;
+    const dayCells = DAY_LABELS.map((day, dayIndex) => {
+      const blocks = cells[period][dayIndex + 1];
+      if (!blocks.length) return "<td></td>";
+      return `
+        <td>
+          ${blocks
+            .map(
+              ({ course, section, color, conflict }) => `
+            <div class="course-block ${conflict ? "conflict" : ""}" style="--block-color:${color};">
+              <strong>${escapeHtml(course.name)}</strong>
+              <span>${escapeHtml(courseTeacher(course))} · ${escapeHtml(section.weekday)} ${escapeHtml(section.startPeriod)}-${escapeHtml(section.endPeriod)} · ${escapeHtml(section.weekStart)}-${escapeHtml(section.weekEnd)}周</span>
+              <span>${escapeHtml(section.location || "地点待确认")}</span>
+              <small>${escapeHtml(course.courseNo || "-")} · ${escapeHtml(formatCredits(course.credits))} 学分</small>
+            </div>
+          `,
+            )
+            .join("")}
+        </td>
+      `;
+    }).join("");
+
+    return `
+      <tr>
+        <th><strong>第 ${period} 节</strong><span>${escapeHtml(time)}</span></th>
+        ${dayCells}
+      </tr>
+    `;
+  }).join("");
+
+  const selectedRows = courses
+    .map(
+      (course) => `
+        <tr>
+          <td>${escapeHtml(course.courseNo || "-")}</td>
+          <td>${escapeHtml(course.name)}</td>
+          <td>${escapeHtml(courseTeacher(course))}</td>
+          <td>${escapeHtml(courseTimeText(course))}</td>
+          <td>${escapeHtml(courseClassText(course))}</td>
+          <td>${escapeHtml(formatCredits(course.credits))}</td>
+        </tr>
+      `,
+    )
+    .join("");
+
+  const conflictItems = conflicts.length
+    ? conflicts
+        .map(
+          (conflict) => `
+            <li>${escapeHtml(conflict.a.name)} 与 ${escapeHtml(conflict.b.name)}：${escapeHtml(conflict.weekday)} 第 ${escapeHtml(conflict.startPeriod)}-${escapeHtml(conflict.endPeriod)} 节，第 ${escapeHtml(conflict.weekStart)}-${escapeHtml(conflict.weekEnd)} 周重叠</li>
+          `,
+        )
+        .join("")
+    : "<li>无时间冲突</li>";
+
+  return `<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>选课课表</title>
+  <style>
+    :root { color-scheme: light; --line:#d9e4df; --text:#17231f; --muted:#60716b; --danger:#c43d32; }
+    * { box-sizing: border-box; }
+    body { margin: 24px; color: var(--text); font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif; background: #f7f9f8; }
+    header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; margin-bottom: 18px; }
+    h1 { margin: 0 0 8px; font-size: 26px; }
+    p { margin: 0; color: var(--muted); font-size: 13px; }
+    .stats { display: flex; gap: 10px; }
+    .stat { min-width: 92px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; text-align: center; }
+    .stat strong { display: block; font-size: 20px; color: #0a5f59; }
+    section { margin-top: 18px; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    h2 { margin: 0 0 12px; font-size: 18px; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { border: 1px solid var(--line); padding: 8px; vertical-align: top; }
+    thead th { background: #eef7f4; font-size: 13px; }
+    tbody th { width: 82px; background: #fbfcfc; text-align: left; }
+    tbody th strong, tbody th span { display: block; }
+    tbody th span { margin-top: 4px; color: var(--muted); font-size: 11px; font-weight: 400; }
+    .course-block { min-height: 62px; padding: 8px; border-radius: 8px; color: #fff; background: var(--block-color); box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); }
+    .course-block.conflict { background: var(--danger); }
+    .course-block strong, .course-block span, .course-block small { display: block; line-height: 1.35; }
+    .course-block strong { font-size: 13px; }
+    .course-block span, .course-block small { font-size: 11px; opacity: .94; }
+    .plain-table { table-layout: auto; }
+    .plain-table th { background: #eef7f4; text-align: left; }
+    .plain-table td { font-size: 13px; }
+    .conflicts li { margin: 6px 0; color: ${conflicts.length ? "var(--danger)" : "var(--muted)"}; }
+    @media print {
+      body { margin: 10mm; background: #fff; }
+      section { break-inside: avoid; box-shadow: none; }
+      .course-block { color: #111; background: #eef7f4 !important; border: 1px solid #9bbdb3; }
+      .course-block.conflict { border-color: var(--danger); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>选课课表</h1>
+      <p>导出时间：${escapeHtml(dateText)} · 数据来源：${escapeHtml(data.meta?.sourceFiles?.length ? `${data.meta.sourceFiles.length} 个导出文件` : "本地导入数据")}</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong>${escapeHtml(courses.length)}</strong><span>课程</span></div>
+      <div class="stat"><strong>${escapeHtml(formatCredits(totalCredits))}</strong><span>学分</span></div>
+      <div class="stat"><strong>${escapeHtml(conflicts.length)}</strong><span>冲突</span></div>
+    </div>
+  </header>
+  <section>
+    <h2>周课表</h2>
+    <table>
+      <thead>
+        <tr><th>节次</th>${DAY_LABELS.map((day) => `<th>${escapeHtml(day.replace("星期", "周"))}</th>`).join("")}</tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </section>
+  <section class="conflicts">
+    <h2>冲突提醒</h2>
+    <ul>${conflictItems}</ul>
+  </section>
+  <section>
+    <h2>已选课程明细</h2>
+    <table class="plain-table">
+      <thead><tr><th>课程序号</th><th>课程</th><th>教师</th><th>时间地点</th><th>教学班</th><th>学分</th></tr></thead>
+      <tbody>${selectedRows}</tbody>
+    </table>
+  </section>
+</body>
+</html>`;
+}
+
+function exportSchedule() {
+  const courses = selectedCourses();
+  if (!courses.length) return;
+  const { conflicts, conflictSectionKeys } = computeConflicts(courses);
+  const html = exportScheduleHtml(courses, conflicts, conflictSectionKeys);
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0, 10);
+  link.href = url;
+  link.download = `选课课表-${stamp}.html`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function render() {
@@ -428,6 +616,7 @@ function bindEvents() {
     state.selected.clear();
     render();
   });
+  el.exportSchedule.addEventListener("click", exportSchedule);
   document.addEventListener("click", (event) => {
     const toggle = event.target.closest("[data-toggle-id]");
     if (toggle) {

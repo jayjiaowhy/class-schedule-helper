@@ -172,6 +172,13 @@ button {
   background: var(--accent-strong);
 }
 
+.link-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  background: var(--line-strong);
+  border-color: var(--line-strong);
+}
+
 .workspace {
   flex: 1;
   display: grid;
@@ -302,26 +309,6 @@ select:focus,
   margin-top: 6px;
   color: var(--muted);
   font-size: 12px;
-}
-
-.supplement-box {
-  margin-top: 16px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: #fbfcfc;
-}
-
-.supplement-box strong {
-  display: block;
-  font-size: 13px;
-}
-
-.supplement-box p {
-  margin: 7px 0 0;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.55;
 }
 
 .main-stage {
@@ -713,8 +700,7 @@ tbody tr.active {
   }
 
   .filter-panel .panel-heading,
-  .metric-strip,
-  .supplement-box {
+  .metric-strip {
     grid-column: 1 / -1;
   }
 
