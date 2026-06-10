@@ -341,7 +341,8 @@ function renderSummary(courses, conflicts) {
   const totalCredits = courses.reduce((sum, course) => sum + Number(course.credits || 0), 0);
   const files = data.meta?.sourceFiles || [];
   const source = files.length > 1 ? `${files.length} 个导出文件` : files[0] || "本地数据";
-  el.dataStatus.textContent = `${source} · ${data.meta?.courseCount || data.courses.length} 个教学班 · ${data.meta?.sectionCount || 0} 段时间`;
+  const deduped = data.meta?.dedupedCount ? ` · 已去重 ${data.meta.dedupedCount} 条` : "";
+  el.dataStatus.textContent = `${source} · ${data.meta?.courseCount || data.courses.length} 个教学班 · ${data.meta?.sectionCount || 0} 段时间${deduped}`;
   el.selectedCount.textContent = String(courses.length);
   el.summaryCourses.textContent = String(courses.length);
   el.summaryCredits.textContent = formatCredits(totalCredits);
@@ -381,7 +382,7 @@ function toggleCourse(id) {
 }
 
 function seedDemoSelection() {
-  const demoIds = ["exportResult-35-0010", "exportResult-35-0050", "exportResult-35-0247", "exportResult-35-1234"];
+  const demoIds = ["course-0010", "course-0050", "course-0247", "course-1234"];
   demoIds.forEach((id) => {
     if (courseById.has(id)) state.selected.add(id);
   });

@@ -1,8 +1,10 @@
 window.COURSE_DATA = {
-  "generatedAt": "2026-06-10T16:14:23",
+  "generatedAt": "2026-06-10T16:54:17",
   "meta": {
-    "courseCount": 49,
-    "sectionCount": 58,
+    "importedCourseCount": 49,
+    "courseCount": 43,
+    "sectionCount": 50,
+    "dedupedCount": 6,
     "categories": [
       "专业基础课",
       "专业方向模块",
@@ -37,7 +39,7 @@ window.COURSE_DATA = {
   },
   "courses": [
     {
-      "id": "exportResult (36)-0382",
+      "id": "course-0382",
       "sourceFile": "exportResult (36).xls",
       "courseNo": "0382",
       "code": "102855",
@@ -72,7 +74,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (36)-0444",
+      "id": "course-0444",
       "sourceFile": "exportResult (36).xls",
       "courseNo": "0444",
       "code": "102855",
@@ -107,7 +109,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (36)-0510",
+      "id": "course-0510",
       "sourceFile": "exportResult (36).xls",
       "courseNo": "0510",
       "code": "102855",
@@ -142,7 +144,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (36)-0536",
+      "id": "course-0536",
       "sourceFile": "exportResult (36).xls",
       "courseNo": "0536",
       "code": "102855",
@@ -177,7 +179,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (36)-0556",
+      "id": "course-0556",
       "sourceFile": "exportResult (36).xls",
       "courseNo": "0556",
       "code": "102855",
@@ -212,7 +214,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (36)-0562",
+      "id": "course-0562",
       "sourceFile": "exportResult (36).xls",
       "courseNo": "0562",
       "code": "102855",
@@ -247,7 +249,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (36)-1993",
+      "id": "course-1993",
       "sourceFile": "exportResult (36).xls",
       "courseNo": "1993",
       "code": "102855",
@@ -295,7 +297,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (37)-0764",
+      "id": "course-0764",
       "sourceFile": "exportResult (37).xls",
       "courseNo": "0764",
       "code": "103567",
@@ -330,7 +332,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (38)-0560",
+      "id": "course-0560",
       "sourceFile": "exportResult (38).xls",
       "courseNo": "0560",
       "code": "102978",
@@ -378,7 +380,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (38)-0783",
+      "id": "course-0783",
       "sourceFile": "exportResult (38).xls",
       "courseNo": "0783",
       "code": "102978",
@@ -426,7 +428,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1212",
+      "id": "course-1212",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1212",
       "code": "102705",
@@ -461,7 +463,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1235",
+      "id": "course-1235",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1235",
       "code": "102705",
@@ -496,7 +498,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1248",
+      "id": "course-1248",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1248",
       "code": "102705",
@@ -531,7 +533,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1282",
+      "id": "course-1282",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1282",
       "code": "102705",
@@ -566,7 +568,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1300",
+      "id": "course-1300",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1300",
       "code": "102705",
@@ -601,7 +603,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1398",
+      "id": "course-1398",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1398",
       "code": "102705",
@@ -636,7 +638,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1423",
+      "id": "course-1423",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1423",
       "code": "102705",
@@ -671,7 +673,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1439",
+      "id": "course-1439",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1439",
       "code": "102705",
@@ -706,7 +708,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1530",
+      "id": "course-1530",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1530",
       "code": "102705",
@@ -741,7 +743,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1642",
+      "id": "course-1642",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1642",
       "code": "102705",
@@ -776,7 +778,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (39)-1908",
+      "id": "course-1908",
       "sourceFile": "exportResult (39).xls",
       "courseNo": "1908",
       "code": "102705",
@@ -811,7 +813,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (40)-1233",
+      "id": "course-1233",
       "sourceFile": "exportResult (40).xls",
       "courseNo": "1233",
       "code": "101710",
@@ -846,7 +848,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (40)-1246",
+      "id": "course-1246",
       "sourceFile": "exportResult (40).xls",
       "courseNo": "1246",
       "code": "101710",
@@ -881,7 +883,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (40)-1264",
+      "id": "course-1264",
       "sourceFile": "exportResult (40).xls",
       "courseNo": "1264",
       "code": "101710",
@@ -916,7 +918,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (41)-0161",
+      "id": "course-0161",
       "sourceFile": "exportResult (41).xls",
       "courseNo": "0161",
       "code": "101199",
@@ -951,7 +953,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (41)-0525",
+      "id": "course-0525",
       "sourceFile": "exportResult (41).xls",
       "courseNo": "0525",
       "code": "101199",
@@ -999,7 +1001,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (41)-1234",
+      "id": "course-1234",
       "sourceFile": "exportResult (41).xls",
       "courseNo": "1234",
       "code": "101199",
@@ -1047,7 +1049,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (41)-1247",
+      "id": "course-1247",
       "sourceFile": "exportResult (41).xls",
       "courseNo": "1247",
       "code": "101199",
@@ -1095,7 +1097,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (41)-1288",
+      "id": "course-1288",
       "sourceFile": "exportResult (41).xls",
       "courseNo": "1288",
       "code": "101199",
@@ -1143,7 +1145,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (42)-1291",
+      "id": "course-1291",
       "sourceFile": "exportResult (42).xls",
       "courseNo": "1291",
       "code": "104235",
@@ -1178,7 +1180,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (43)-1327",
+      "id": "course-1327",
       "sourceFile": "exportResult (43).xls",
       "courseNo": "1327",
       "code": "103087",
@@ -1213,7 +1215,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult (43)-1769",
+      "id": "course-1769",
       "sourceFile": "exportResult (43).xls",
       "courseNo": "1769",
       "code": "103087",
@@ -1248,7 +1250,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-0010",
+      "id": "course-0010",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "0010",
       "code": "100096",
@@ -1283,7 +1285,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-0050",
+      "id": "course-0050",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "0050",
       "code": "100096",
@@ -1318,7 +1320,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-0247",
+      "id": "course-0247",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "0247",
       "code": "103181",
@@ -1353,7 +1355,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-0259",
+      "id": "course-0259",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "0259",
       "code": "100096",
@@ -1388,7 +1390,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-0368",
+      "id": "course-0368",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "0368",
       "code": "103569",
@@ -1423,7 +1425,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-0418",
+      "id": "course-0418",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "0418",
       "code": "101783",
@@ -1458,7 +1460,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-0428",
+      "id": "course-0428",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "0428",
       "code": "101783",
@@ -1493,7 +1495,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-0937",
+      "id": "course-0937",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "0937",
       "code": "100096",
@@ -1528,7 +1530,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-1231",
+      "id": "course-1231",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "1231",
       "code": "103174",
@@ -1563,125 +1565,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-1233",
-      "sourceFile": "exportResult-35.xls",
-      "courseNo": "1233",
-      "code": "101710",
-      "name": "决策仿真",
-      "category": "必修课",
-      "department": "信息管理与工程学院",
-      "arrangement": "邵志芳 星期五 1-2 [1-16] 科研实验大楼511（金融科学实验中心）",
-      "teachingClass": "24大数据1班",
-      "teacher": "邵志芳",
-      "teacherDepartment": "信息管理与工程学院",
-      "current": 50,
-      "limit": 50,
-      "seatsLeft": 0,
-      "credits": 2.0,
-      "hours": 32,
-      "startWeek": 1,
-      "weekCount": 16,
-      "sections": [
-        {
-          "id": "5-1-2-1-16-1",
-          "raw": "邵志芳 星期五 1-2 [1-16] 科研实验大楼511（金融科学实验中心）",
-          "weekday": "星期五",
-          "dayOrder": 5,
-          "startPeriod": 1,
-          "endPeriod": 2,
-          "weekStart": 1,
-          "weekEnd": 16,
-          "location": "科研实验大楼511（金融科学实验中心）",
-          "teacher": "邵志芳",
-          "parsed": true
-        }
-      ]
-    },
-    {
-      "id": "exportResult-35-1234",
-      "sourceFile": "exportResult-35.xls",
-      "courseNo": "1234",
-      "code": "101199",
-      "name": "随机过程",
-      "category": "必修课",
-      "department": "信息管理与工程学院",
-      "arrangement": "郭姗姗 星期一 1-2 [1-12] 三教601 <br>郭姗姗 星期四 6-7 [1-12] 三教601",
-      "teachingClass": "24大数据1班",
-      "teacher": "郭姗姗",
-      "teacherDepartment": "信息管理与工程学院",
-      "current": 50,
-      "limit": 50,
-      "seatsLeft": 0,
-      "credits": 3.0,
-      "hours": 48,
-      "startWeek": 1,
-      "weekCount": 12,
-      "sections": [
-        {
-          "id": "1-1-2-1-12-1",
-          "raw": "郭姗姗 星期一 1-2 [1-12] 三教601",
-          "weekday": "星期一",
-          "dayOrder": 1,
-          "startPeriod": 1,
-          "endPeriod": 2,
-          "weekStart": 1,
-          "weekEnd": 12,
-          "location": "三教601",
-          "teacher": "郭姗姗",
-          "parsed": true
-        },
-        {
-          "id": "4-6-7-1-12-2",
-          "raw": "郭姗姗 星期四 6-7 [1-12] 三教601",
-          "weekday": "星期四",
-          "dayOrder": 4,
-          "startPeriod": 6,
-          "endPeriod": 7,
-          "weekStart": 1,
-          "weekEnd": 12,
-          "location": "三教601",
-          "teacher": "郭姗姗",
-          "parsed": true
-        }
-      ]
-    },
-    {
-      "id": "exportResult-35-1235",
-      "sourceFile": "exportResult-35.xls",
-      "courseNo": "1235",
-      "code": "102705",
-      "name": "机器学习",
-      "category": "必修课",
-      "department": "信息管理与工程学院",
-      "arrangement": "丁婧颖 星期四 3-4 [1-16] 三教601",
-      "teachingClass": "24大数据1班",
-      "teacher": "丁婧颖",
-      "teacherDepartment": "信息管理与工程学院",
-      "current": 50,
-      "limit": 50,
-      "seatsLeft": 0,
-      "credits": 2.0,
-      "hours": 32,
-      "startWeek": 1,
-      "weekCount": 16,
-      "sections": [
-        {
-          "id": "4-3-4-1-16-1",
-          "raw": "丁婧颖 星期四 3-4 [1-16] 三教601",
-          "weekday": "星期四",
-          "dayOrder": 4,
-          "startPeriod": 3,
-          "endPeriod": 4,
-          "weekStart": 1,
-          "weekEnd": 16,
-          "location": "三教601",
-          "teacher": "丁婧颖",
-          "parsed": true
-        }
-      ]
-    },
-    {
-      "id": "exportResult-35-1236",
+      "id": "course-1236",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "1236",
       "code": "103184",
@@ -1716,7 +1600,7 @@ window.COURSE_DATA = {
       ]
     },
     {
-      "id": "exportResult-35-1239",
+      "id": "course-1239",
       "sourceFile": "exportResult-35.xls",
       "courseNo": "1239",
       "code": "105352",
@@ -1746,124 +1630,6 @@ window.COURSE_DATA = {
           "weekEnd": 16,
           "location": "三教602",
           "teacher": "陈雨恬",
-          "parsed": true
-        }
-      ]
-    },
-    {
-      "id": "exportResult-35-1246",
-      "sourceFile": "exportResult-35.xls",
-      "courseNo": "1246",
-      "code": "101710",
-      "name": "决策仿真",
-      "category": "必修课",
-      "department": "信息管理与工程学院",
-      "arrangement": "邵志芳 星期五 6-7 [1-16] 科研实验大楼511（金融科学实验中心）",
-      "teachingClass": "24大数据2班",
-      "teacher": "邵志芳",
-      "teacherDepartment": "信息管理与工程学院",
-      "current": 51,
-      "limit": 51,
-      "seatsLeft": 0,
-      "credits": 2.0,
-      "hours": 32,
-      "startWeek": 1,
-      "weekCount": 16,
-      "sections": [
-        {
-          "id": "5-6-7-1-16-1",
-          "raw": "邵志芳 星期五 6-7 [1-16] 科研实验大楼511（金融科学实验中心）",
-          "weekday": "星期五",
-          "dayOrder": 5,
-          "startPeriod": 6,
-          "endPeriod": 7,
-          "weekStart": 1,
-          "weekEnd": 16,
-          "location": "科研实验大楼511（金融科学实验中心）",
-          "teacher": "邵志芳",
-          "parsed": true
-        }
-      ]
-    },
-    {
-      "id": "exportResult-35-1247",
-      "sourceFile": "exportResult-35.xls",
-      "courseNo": "1247",
-      "code": "101199",
-      "name": "随机过程",
-      "category": "必修课",
-      "department": "信息管理与工程学院",
-      "arrangement": "郭姗姗 星期二 1-2 [1-12] 三教601 <br>郭姗姗 星期四 1-2 [1-12] 三教601",
-      "teachingClass": "24大数据2班",
-      "teacher": "郭姗姗",
-      "teacherDepartment": "信息管理与工程学院",
-      "current": 51,
-      "limit": 51,
-      "seatsLeft": 0,
-      "credits": 3.0,
-      "hours": 48,
-      "startWeek": 1,
-      "weekCount": 12,
-      "sections": [
-        {
-          "id": "2-1-2-1-12-1",
-          "raw": "郭姗姗 星期二 1-2 [1-12] 三教601",
-          "weekday": "星期二",
-          "dayOrder": 2,
-          "startPeriod": 1,
-          "endPeriod": 2,
-          "weekStart": 1,
-          "weekEnd": 12,
-          "location": "三教601",
-          "teacher": "郭姗姗",
-          "parsed": true
-        },
-        {
-          "id": "4-1-2-1-12-2",
-          "raw": "郭姗姗 星期四 1-2 [1-12] 三教601",
-          "weekday": "星期四",
-          "dayOrder": 4,
-          "startPeriod": 1,
-          "endPeriod": 2,
-          "weekStart": 1,
-          "weekEnd": 12,
-          "location": "三教601",
-          "teacher": "郭姗姗",
-          "parsed": true
-        }
-      ]
-    },
-    {
-      "id": "exportResult-35-1248",
-      "sourceFile": "exportResult-35.xls",
-      "courseNo": "1248",
-      "code": "102705",
-      "name": "机器学习",
-      "category": "必修课",
-      "department": "信息管理与工程学院",
-      "arrangement": "林倪菲 星期五 3-4 [1-16] 三教104",
-      "teachingClass": "24大数据2班",
-      "teacher": "林倪菲",
-      "teacherDepartment": "信息管理与工程学院",
-      "current": 51,
-      "limit": 51,
-      "seatsLeft": 0,
-      "credits": 2.0,
-      "hours": 32,
-      "startWeek": 1,
-      "weekCount": 16,
-      "sections": [
-        {
-          "id": "5-3-4-1-16-1",
-          "raw": "林倪菲 星期五 3-4 [1-16] 三教104",
-          "weekday": "星期五",
-          "dayOrder": 5,
-          "startPeriod": 3,
-          "endPeriod": 4,
-          "weekStart": 1,
-          "weekEnd": 16,
-          "location": "三教104",
-          "teacher": "林倪菲",
           "parsed": true
         }
       ]

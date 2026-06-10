@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from hashlib import sha1
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -122,6 +123,49 @@ def parse_sections(arrangement: str, teacher: str) -> list[dict[str, Any]]:
     return sections
 
 
+def stable_course_id(course_no: str, fallback_parts: list[str]) -> str:
+    if course_no:
+        return f"course-{course_no}"
+    digest = sha1("||".join(fallback_parts).encode("utf-8")).hexdigest()[:12]
+    return f"course-{digest}"
+
+
+def dedupe_key(course: dict[str, Any]) -> tuple[Any, ...]:
+    if course["courseNo"]:
+        return ("courseNo", course["courseNo"])
+    return (
+        "fallback",
+        course["code"],
+        course["name"],
+        course["category"],
+        course["department"],
+        course["teacher"],
+        course["teacherDepartment"],
+        course["arrangement"],
+        course["teachingClass"],
+        course["credits"],
+        course["hours"],
+        course["startWeek"],
+        course["weekCount"],
+    )
+
+
+def dedupe_courses(courses: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
+    seen: set[tuple[Any, ...]] = set()
+    unique_courses: list[dict[str, Any]] = []
+    duplicate_count = 0
+
+    for course in courses:
+        key = dedupe_key(course)
+        if key in seen:
+            duplicate_count += 1
+            continue
+        seen.add(key)
+        unique_courses.append(course)
+
+    return unique_courses, duplicate_count
+
+
 def read_course_file(path: Path) -> list[dict[str, Any]]:
     suffix = path.suffix.lower()
     if suffix not in {".xls", ".xlsx"}:
@@ -141,10 +185,21 @@ def read_course_file(path: Path) -> list[dict[str, Any]]:
         current = to_int(row.get("实际人数", 0))
         limit = to_int(row.get("人数上限", 0))
         seats_left = max(limit - current, 0) if limit else 0
+        course_id = stable_course_id(
+            course_no,
+            [
+                code,
+                name,
+                teacher,
+                arrangement,
+                clean_value(row.get("教学班", "")),
+                str(row_index),
+            ],
+        )
 
         courses.append(
             {
-                "id": f"{path.stem}-{course_no or row_index}",
+                "id": course_id,
                 "sourceFile": path.name,
                 "courseNo": course_no,
                 "code": code,
@@ -180,10 +235,14 @@ def main() -> None:
     courses: list[dict[str, Any]] = []
     for source in source_files:
         courses.extend(read_course_file(source))
+    imported_course_count = len(courses)
+    courses, duplicate_count = dedupe_courses(courses)
 
     meta = {
+        "importedCourseCount": imported_course_count,
         "courseCount": len(courses),
         "sectionCount": sum(len(course["sections"]) for course in courses),
+        "dedupedCount": duplicate_count,
         "categories": sorted({course["category"] for course in courses if course["category"]}),
         "departments": sorted({course["department"] for course in courses if course["department"]}),
         "sourceFiles": [path.name for path in source_files],
@@ -199,7 +258,10 @@ def main() -> None:
     js += json.dumps(payload, ensure_ascii=False, indent=2)
     js += ";\n"
     OUTPUT_FILE.write_text(js, encoding="utf-8")
-    print(f"Wrote {len(courses)} courses from {len(source_files)} file(s) to {OUTPUT_FILE}")
+    print(
+        f"Wrote {len(courses)} courses from {len(source_files)} file(s) to {OUTPUT_FILE} "
+        f"({duplicate_count} duplicate row(s) removed)"
+    )
 
 
 if __name__ == "__main__":
