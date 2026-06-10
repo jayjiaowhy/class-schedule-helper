@@ -15,9 +15,6 @@
 ## 更新数据
 
 把新的学校导出 `.xls` 或 `.xlsx` 文件放入 `data/raw/`，然后运行：
-
-```powershell
-& 'C:\Users\jiaoo\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' scripts\parse_courses.py
-```
+`scripts\parse_courses.py`
 
 脚本会重新生成 `src/data.js`，刷新网页即可看到新数据。
